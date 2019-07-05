@@ -38,6 +38,53 @@ void account_query::read_data()
     cin>>total_Balance;
     cout<<endl;
 }
+void account_query::show_data(){
+    cout<<"Account Number: "<<account_number<<endl;
+    cout<<"First Name: "<<firstName<<endl;
+    cout<<"Last Name: "<<lastName<<endl;
+    cout<<"Current Balance: Rs. "<<total_Balance<<endl;
+    cout<<"--------------------------------------"<<endl;
+}
+void account_query::write_rec(){
+    ofstream outfile;
+    outfile.open("record.bank",ios::binary|ios::app);
+    read_data();
+    outfile.write(reinterpret_cast<char *>(this),sizeof(*this));
+    outfile.close();
+}
+void account_query::read_rec(){
+    ifstream infile;
+    infile.open("record.bank",ios::binary);
+    if(!infile){
+        cout<<"Error in opening! File not found!"<<endl;
+        return;
+    }
+    cout<<"\n***Data from file***"<<endl;
+    while(!infile.eof()){
+        if(infile.read(reinterpret_cast<char*>(this), sizeof(*this))>0)
+        {
+            show_data();
+        }
+    }
+    infile.close();
+}
+void account_query::search_rec(){
+    int n;
+    ifstream infile;
+    infile.open("record.bank",ios::binary);
+    if(!infile){
+        cout<<"\nError in opening! File not found!"<<endl;
+        return;
+    }
+    infile.seekg(0,ios::end);
+    int count=infile.tellg()/sizeof(*this);
+    cout<<"\n There are "<count<<" records in the file";
+    cout<<"\n Enter record number to search: ";
+    cin>>n;
+    infile.seekg((n-1)*sizeof(*this));
+    infile.read(reinterpret_cast<char*>(this),sizeof(*this));
+    show_data();
+}
 
 int main()
 {
